@@ -1,0 +1,36 @@
+name: Continuous Delivery
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Validate release
+        run: python -m pytest -v
+
+      - name: Package application
+        run: |
+          mkdir -p dist
+          cp robot.py README.md dist/
+          tar -czf robot-demo.tar.gz -C dist .
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: robot-demo
+          path: robot-demo.tar.gz
