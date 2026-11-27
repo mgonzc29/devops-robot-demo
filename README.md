@@ -59,6 +59,28 @@ A continuación se recogen algunas evidencias gráficas interesantes sobre desar
        return distance > 0.5
    ```
 
-   Se devuelve `False`.
+   Se devuelve `False`, porque la condición es estrictamente `distance > 0.5`.
 
 2. **¿Qué evento dispara el pipeline? ¿Qué ocurriría si se modifica el código sin ejecutar las pruebas localmente?**
+
+   El workflow de CI se dispara con un `push` o un `pull_request` hacia `main`, y el de entrega con el `push` de un tag que comienza con "v". Si se sube un cambio sin haber ejecutado las pruebas previamente en local, GitHub Actions se encargaría de realizarlas y en caso de fallo bloquea la integración hasta que se corrija..
+
+3. **¿Qué aporta ejecutar las pruebas en GitHub Actions en vez de solo localmente?**
+
+   Aporta automatización y reproducibilidad, ya que además de realizarse automáticamente evitando descuidos y olvidos, las pruebas se ejecutan siempre en el mismo entorno limpio.
+
+4. **¿Qué sucede cuando un Pull Request contiene un fallo?**
+
+   El job de CI termina con código de salida 1, apareciendo como fallido y se notifica el dicho resultado (también por el webhook de Discord). De esta manera la rama main queda protegida de código que no pase dichas pruebas.
+
+5. **¿Para qué sirve proteger `main`?**
+
+   Para impedir cambios directos y obligar a que todo llegue mediante un pull request revisado y con salidas exitosas en dichas revisiones, manteniendo estable y segura la rama principal.
+
+6. **¿En qué se diferencian CI, Continuous Delivery y Continuous Deployment?**
+
+   CI integra y valida automáticamente cada cambio; Continuous Delivery deja además el artefacto `robot-demo` preparado para poder desplegarlo, pero requiere una acción manual del desarrollador (el tag); Continuous Deployment despliega automáticamente en el entorno final tras pasar las pruebas.
+
+7. **¿Es suficiente superar cuatro pruebas para desplegar software en un robot físico? Justifica tu respuesta.**
+
+   No. Las cuatro pruebas unitarias cubren solo casos básicos de `can_move`; antes de desplegar en hardware harían falta diferentes pruebas de integración con sensores, en condiciones reales y manejo de errores entre otras, porque un fallo en el robot físico puede tener graves consecuencias.
